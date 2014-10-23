@@ -1,0 +1,9 @@
+
+<form action="/save/" method="post">
+{% block body %}
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="create"/>
+</form>
+
+{% endblock %}

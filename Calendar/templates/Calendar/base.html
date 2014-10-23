@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  	<head>
+		<link href="{{STATIC_URL}}css/style.css" rel="stylesheet">
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+		<script src="//code.jquery.com/jquery.js"></script>
+		<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+		<script src="{{STATIC_URL}}js/bootstrap.min.js"></script>
+	<script>
+		$(function() {
+		   $( "#dateFrom" ).datepicker();
+		   $( "#dateTo" ).datepicker();
+		   $( "#dateRefresh" ).datepicker();
+		   $( "#datefromselect" ).datepicker({ dateFormat: 'yy-mm-dd' });
+		   $( "#datetoselect" ).datepicker({ dateFormat: 'yy-mm-dd' });
+		});
+	</script>
+
+
+
+
+	</head>
+
+
+	<body>
+	<div width="100%" class="nav">
+		<ul>
+			<li><a href="/create/" class="links">Nouvelle demande</a></li>
+			<li><a href="/" class="links">liste des demandes</a></li>
+		</ul>
+	</div>
+	<div>
+		{% block body %} {% endblock %}
+	</div>
+
+	</body>
+</html>

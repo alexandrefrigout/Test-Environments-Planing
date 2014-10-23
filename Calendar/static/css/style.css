@@ -1,0 +1,72 @@
+
+html, body{
+	margin: 0;
+	padding: 0; 
+	border: 0;
+}
+
+.error {
+	font-weight: bold;
+	color: rgb(0, 0, 0);
+	background-color: rgb(255, 204, 204);
+}
+
+.nav {
+	background: rgb(255, 255, 255);
+	top:0px; left:0px;
+	height:60px;
+}
+
+ul {
+	list-style-type: none;
+	padding: 10px;
+	margin: 0px auto;
+	width: 100%;
+ }
+
+li {
+	border: 1px solid black;
+	float: left;
+	width: 10em;
+	height: 2em;
+	line-height: 30px;
+	vertical-align: middle;
+	text-align: center;
+	display: inline-block;
+	background: #999;
+	margin: 5px;
+}
+
+li > A:link {
+	text-decoration: none;
+	color: black;
+	font-weight: bold;
+}
+
+li > A:visited {
+	color: black;
+}
+
+li > A:hover {
+	color: red;
+}
+
+
+.tablehead {
+	background: rgb(255, 204, 204);
+}
+
+.linkable {
+	background: rgb(229, 255, 204);
+}
+
+.linkable:hover {
+	background-color: rgb(204, 229, 255); 
+}
+
+table {
+	border: 1px solid black;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+

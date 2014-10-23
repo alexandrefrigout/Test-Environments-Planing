@@ -1,0 +1,23 @@
+<html>
+<head> <title>connexion administration</title> 
+<link href="{{STATIC_URL}}css/bootstrap.css" rel="stylesheet">
+
+</head>
+<body>
+<div align="center">
+<h1>Connexion Adminstrateur</h1>
+{% if form.errors %}
+<p>Your username and password didn't match!
+Please try again!</p>
+{% endif %}
+<form method="post" action="." class="form-horizontal">
+{% csrf_token %}
+<p><label for="id_username">Login:</label>{{ form.username }}</p>
+<p><label for="id_password">Mot de passe:</label>{{ form.password }}</p>
+<input type="hidden" name="next" value="{{ next }}" />
+<input type="submit" value="Connexion" class="btn btn-large"/>
+</form>
+</div>
+</body>
+</html>
+

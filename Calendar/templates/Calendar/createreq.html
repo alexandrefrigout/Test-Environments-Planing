@@ -1,0 +1,16 @@
+{% extends 'Calendar/base.html' %}
+{% block body %}
+	<div align="center">
+	<form action="/create/" method="POST" class="form-horizontal">
+	{% csrf_token %}
+		{% for field in form %}
+		    	<div class="control-group">
+        			<p class="error">{{ field.errors.as_text }}</p>
+        			{{ field.label_tag }} <div class="controls"> {{ field }}
+				
+    			</div>
+			</div>
+		{% endfor %}
+	<input type="submit" class="btn btn-primary" value="Creer" />
+	</div>
+{% endblock %}
