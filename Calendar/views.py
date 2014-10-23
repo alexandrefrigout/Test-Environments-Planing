@@ -136,7 +136,6 @@ def makeView(request):
 			dateto = datetime.datetime.strptime(request.GET['dateto'], '%Y-%m-%d')
 			#construction de la liste des requetes correspondant aux dates
 			reqs = Request.objects.filter(start__gte=datefrom).filter(end__lte=dateto)
-			print len(reqs)
 			#discrimination des requetes par environnement
 			finalList = []
 			for en in existingEnvs:
@@ -144,19 +143,19 @@ def makeView(request):
 				for req in reqs:
 					if req.env:
 						if req.env.name == e.name:
-							print req.env.name, e.name
+				#			print req.env.name, e.name
 				#			print "found"
 							e.add_req(req)
 				finalList.append(e)
 
-			for f in finalList:
-				print f.name, len(f.reqlist)
+			#for f in finalList:
+			#	print f.name, len(f.reqlist)
 		else:
 			datefrom=datetime.datetime.now()
 			dateto=datetime.datetime.now()
 			reqs = Request.objects.filter(start__gte=datefrom).filter(end__lte=dateto)
-	for i in reqs:
-		print i
+	for i in finalList:
+		print i.name
 	nbjours = (dateto - datefrom).days
 	indice = round(1200/nbjours)
 	etiquettewidth = 50
