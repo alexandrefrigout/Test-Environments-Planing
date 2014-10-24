@@ -70,3 +70,11 @@ table {
 	border-collapse: collapse;
 }
 
+a > div {
+	text-decoration: none;
+	color: white;
+}
+
+a > div:hover {
+	color: red;
+}

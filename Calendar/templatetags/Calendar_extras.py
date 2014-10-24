@@ -18,3 +18,8 @@ def range(value):
 @register.filter
 def displaydaydate(value):
 	return date.strftime(value, '%d') 
+
+
+@register.filter
+def dateop(value, arg):
+	return (value - arg).days

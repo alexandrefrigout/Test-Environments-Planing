@@ -20,10 +20,10 @@
 	{% for r in reqs %}
 </div>
 	<div width="100%" style="position: relative">
-		<div style="position: absolute; top: {% ifchanged r.name %}{{forloop.counter0|multiply:150|add:20}}px{% endifchanged %}; width: {{infos.2}}px; display: block; left: 10px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle '#54C571' '#F75D59' '#C2DFFF' %}; height:{{r.reqlist|length|multiply:50}}px">{{r.name}}
+		<div style="position: absolute; top: {% ifchanged r.name %}{{forloop.counter0|multiply:150|add:20}}px{% endifchanged %}; width: {{infos.2}}px; display: block; left: 10px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle '#54C571' '#F75D59' '#C2DFFF' %}; line-height: 150px; vertical-align: middle; height:150px; text-align: center;">{{r.name}}
 		</div>
-		<div style="position: absolute; top: {% ifchanged r.name %}{{forloop.counter0|multiply:150|add:20}}px{% endifchanged %}; width: 1000px; display: block; left: 75px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle '#54C571' '#F75D59' '#C2DFFF' %}; height:{{r.reqlist|length|multiply:50}}px">{{r.reqlist|length}} : {% for re in r.reqlist %}
-					{{re.title}} {% endfor %}</div>
+		<div style="position: absolute; top: {% ifchanged r.name %}{{forloop.counter0|multiply:150|add:20}}px{% endifchanged %}; width: 1000px; display: block; left: 75px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle '#54C571' '#F75D59' '#C2DFFF' %}; height:150px">{% for re in r.reqlist %} <a href="/edit/{{re.id}}"><div style="position: absolute; background-color: blue; width: {{re.size}}px; left: {{re.offset}}px; height:30px; top:{{re.yoffset}}px; line-height: 30px; vertical-align: middle; text-align:center; border: 1px dashed white">
+					{{re.title}} : {{re.id}}</div></a>{% endfor %}</div>
 		<br>
 	</div>
 	{% endfor %}
