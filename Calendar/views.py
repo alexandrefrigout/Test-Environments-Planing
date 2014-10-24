@@ -2,6 +2,8 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django import forms
 from django.contrib.auth.decorators import login_required
+import time
+from datetime import date
 import datetime
 from Calendar.models import Envs, Application, Request
 
@@ -100,8 +102,9 @@ def deleteRequest(request, title):
 	return HttpResponseRedirect('/')
 
 def index(request):
+	form = InputDateForm()
 	all_req = Request.objects.order_by('-date_creation')[:]
-	return render(request, 'Calendar/index.html', {'list_req' : all_req})
+	return render(request, 'Calendar/index.html', {'list_req' : all_req, 'form' : form})
 
 @login_required
 def assign(request, title):
@@ -127,13 +130,15 @@ class envTmp:
 		self.reqlist.append(req)
 
 def makeView(request):
-	if 'datefrom' and 'dateto' in request.GET:
-		if request.GET['datefrom']:
+	form = InputDateForm()
+	if request.method=='GET':
+		form = InputDateForm(request.GET)
+		if form.is_valid():
 			#recuperation de la liste des environnements existants dans la db
 			existingEnvs = Envs.objects.all()[:]
 			#recuperation des dates de debut et de fin
-			datefrom = datetime.datetime.strptime(request.GET['datefrom'], '%Y-%m-%d')
-			dateto = datetime.datetime.strptime(request.GET['dateto'], '%Y-%m-%d')
+			datefrom = datetime.datetime.strptime(request.GET['datefrom'], '%m/%d/%Y')
+			dateto = datetime.datetime.strptime(request.GET['dateto'], '%m/%d/%Y')
 			#construction de la liste des requetes correspondant aux dates
 			reqs = Request.objects.filter(start__gte=datefrom).filter(end__lte=dateto)
 			#discrimination des requetes par environnement
@@ -143,20 +148,39 @@ def makeView(request):
 				for req in reqs:
 					if req.env:
 						if req.env.name == e.name:
-				#			print req.env.name, e.name
-				#			print "found"
 							e.add_req(req)
 				finalList.append(e)
+			##### to finish ######
+			infostech = []
+			nbjours = (dateto - datefrom).days if (dateto - datefrom).days > 0 else 1
+			infostech.append(nbjours)
+			indice = int(1000/nbjours)
+			infostech.append(indice)
+			etiquettewidth = 50
+			infostech.append(etiquettewidth)
+			datelist = []
+			for date_un in range(nbjours):
+				datelist.append(datefrom + datetime.timedelta(days=date_un))
+			print len(datelist)
+			#####################
 
-			#for f in finalList:
-			#	print f.name, len(f.reqlist)
+			return render(request, 'Calendar/view.html', {'reqs' : finalList, 'form' : form, 'infos' : infostech, 'dates' : datelist})
 		else:
-			datefrom=datetime.datetime.now()
-			dateto=datetime.datetime.now()
-			reqs = Request.objects.filter(start__gte=datefrom).filter(end__lte=dateto)
-	for i in finalList:
-		print i.name
-	nbjours = (dateto - datefrom).days
-	indice = round(1200/nbjours)
-	etiquettewidth = 50
-	return render(request, 'Calendar/view.html', {'reqs' : finalList})
+			return render(request, 'Calendar/view.html', {'form' : form})
+
+class InputDateForm(forms.Form):
+
+	#def __init__(self, *args, **kwargs):
+	#	super(InputDateForm, self).__init__(*args, **kwargs)
+	#	self.fields['datefrom'].required = False
+	#	self.fields['dateto'].required = False
+	
+	datefrom = forms.DateField(('%m/%d/%Y',), label='Debut', widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'datefromselect'}))
+	dateto = forms.DateField(('%m/%d/%Y',), label='Fin', widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'datetoselect'}))
+
+	def clean_dateto(self):
+		cleaned_data = self.cleaned_data	
+		ffrom = cleaned_data.get('datefrom')
+		tto = cleaned_data.get('dateto')
+		if tto < ffrom:
+			raise forms.ValidationError("La date de debut doit etre inferieure a la date de fin")

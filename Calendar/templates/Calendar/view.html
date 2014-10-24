@@ -1,21 +1,33 @@
 {% extends 'Calendar/base.html' %}
 {% load Calendar_extras %}
 {% block body %}
-<form class="navbar-search pull-right" action="/makeView/" method="get">
+<!--<form class="navbar-search pull-right" action="/makeView/" method="get">
 		<input type="text" name="datefrom" class="input-medium search-query">
 		<input type="text" name="dateto" class="input-medium search-query">
 		<input type="submit" value="voir">
+</form>-->
+<form class="navbar-search pull-right" action="/makeView/" method="get">
+	{{form.as_p}}
+	<input type="submit" value="voir">
 </form>
 {% if reqs %}
+	{% if infos %}
+<div width="100%" style="position: relative">
+	<div style="position: absolute; top: 0px; left:10px; width: {{infos.2}}px; display: block;"></div>
+	{% for day in dates %}
+		<div style="height: 800px; background-color: white; position: absolute; display: block; top: 0px; left: {{ forloop.counter0|multiply:infos.1|add:76}}px; width: {{infos.1}}px; overflow: auto; border-left: 1px dashed black; text-align: center;">{{day|displaydaydate}}</div>
+	{% endfor %}
 	{% for r in reqs %}
+</div>
 	<div width="100%" style="position: relative">
-		<div style="position: absolute; top: 0px; width: 50px; display: block; left: 10px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle 'blue' 'yellow' 'green' %}; height:{{r.reqlist|length|multiply:50}}px">{{r.name}}
+		<div style="position: absolute; top: {% ifchanged r.name %}{{forloop.counter0|multiply:150|add:20}}px{% endifchanged %}; width: {{infos.2}}px; display: block; left: 10px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle '#54C571' '#F75D59' '#C2DFFF' %}; height:{{r.reqlist|length|multiply:50}}px">{{r.name}}
 		</div>
-		<div style="position: absolute; top: 0px; width: 80%; display: block; left: 75px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle 'blue' 'yellow' 'green' %}; height:{{r.reqlist|length|multiply:50}}px">{{r.reqlist|length}} : {% for re in r.reqlist %}
+		<div style="position: absolute; top: {% ifchanged r.name %}{{forloop.counter0|multiply:150|add:20}}px{% endifchanged %}; width: 1000px; display: block; left: 75px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle '#54C571' '#F75D59' '#C2DFFF' %}; height:{{r.reqlist|length|multiply:50}}px">{{r.reqlist|length}} : {% for re in r.reqlist %}
 					{{re.title}} {% endfor %}</div>
 		<br>
 	</div>
 	{% endfor %}
+	{% endif %}
 {% endif %}
 
 {% endblock %}
