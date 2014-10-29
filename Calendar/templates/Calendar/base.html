@@ -1,20 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
   	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
 		<link href="{{STATIC_URL}}css/style.css" rel="stylesheet">
 		<link rel="stylesheet" href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
 		<script src="//code.jquery.com/jquery.js"></script>
 		<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
 		<script src="{{STATIC_URL}}js/bootstrap.min.js"></script>
 	<script>
+		$(document).ready(function () {
+			if ($("#id_batchs").prop('checked')){
+
+                                $( ".batchType" ).show();
+                        }
+                        else{
+                                $( ".batchType" ).hide();
+                        }
+               		if ($("#id_refresh").prop('checked')){
+                                $( ".daterefresh" ).show();
+                        }
+                        else{
+                                $( ".daterefresh" ).hide();
+                        }
+
+
+		});
 		$(function() {
 		   $( "#dateFrom" ).datepicker();
 		   $( "#dateTo" ).datepicker();
-		   $( "#dateRefresh" ).datepicker();
+		   $( "#id_daterefresh" ).datepicker();
 		   //$( "#datefromselect" ).datepicker({ dateFormat: 'yy-mm-dd' });
 		   $( "#datefromselect" ).datepicker();
 		   //$( "#datetoselect" ).datepicker({ dateFormat: 'yy-mm-dd' });
 		   $( "#datetoselect" ).datepicker();
+		   $( "#id_refresh" ).click(function() {
+			if ($("#id_refresh").prop('checked')){
+				$( ".daterefresh" ).toggle("slow");
+			}
+			else{
+				$( ".daterefresh" ).toggle("slow");
+			}
+		    });
+                    $( "#id_batchs" ).click(function() {
+                        if ($("#id_batchs").prop('checked')){
+
+                                $( ".batchType" ).toggle("slow");
+                        }
+                        else{
+                                $( ".batchType" ).toggle("slow");
+                        }
+                    });
+	
+
 		});
 	</script>
 

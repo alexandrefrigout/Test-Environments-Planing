@@ -6,24 +6,31 @@
 		<input type="text" name="dateto" class="input-medium search-query">
 		<input type="submit" value="voir">
 </form>-->
+<div style="position: relative;top: 0px; left; 0px;width: 100%">
 <form class="navbar-search pull-right" action="/makeView/" method="get">
-	{{form.as_p}}
-	<input type="submit" value="voir">
+	<div style="position: absolute; left: 110px;" class="error">{{form.datefrom.errors.as_text }}</div>
+        <div style="position: absolute; top: {%if form.datefrom.errors or form.dateto.errors %} 30px {%else%} 0px {%endif%}; left: 75px;">Debut: {{form.datefrom}}</div>
+	<div style="position: absolute; left: 320px;" class="error">{{form.dateto.errors.as_text }}</div>
+        <div style="position: absolute; top: {%if form.datefrom.errors or form.dateto.errors %} 30px {%else%} 0px {%endif%}; left: 300px;">Fin: {{form.dateto}}</div>
+        <input style="position: absolute; top: {%if form.datefrom.errors or form.dateto.errors %} 30px {%else%} 0px {%endif%}; left: 500px; width: 80px;" type="submit" value="voir">
 </form>
+</div>
 {% if reqs %}
 	{% if infos %}
-<div width="100%" style="position: relative">
+<div width="100%" style="position: relative; top:50px">
 	<div style="position: absolute; top: 0px; left:10px; width: {{infos.2}}px; display: block;"></div>
+		<div style="position: absolute; left: 0px; top: 0px; width:76px; display: block;"></div>
+		{% for m in month %}<div style="position: absolute; left: {{m.2}}px; top: 0px; width: {{m.1|multiply:infos.1}}px; display: block; border: 1px solid black; text-align: center;">{{m.0}} </div> {% endfor %}
 	{% for day in dates %}
-		<div style="height: 800px; background-color: white; position: absolute; display: block; top: 0px; left: {{ forloop.counter0|multiply:infos.1|add:76}}px; width: {{infos.1}}px; overflow: auto; border-left: 1px dashed black; text-align: center;">{{day|displaydaydate}}</div>
+		<div style="height: 800px; background-color: white; position: absolute; display: block; top: 20px; left: {{ forloop.counter0|multiply:infos.1|add:76}}px; width: {{infos.1}}px; overflow: auto; border-left: 1px dashed black; {% if forloop.last %} border-right: 1px dashed black; {% endif %} text-align: center;">{{day|displaydaydate}}</div>
 	{% endfor %}
 	{% for r in reqs %}
 </div>
-	<div width="100%" style="position: relative">
+	<div width="100%" style="position: relative; top: 70px">
 		<div style="position: absolute; top: {% ifchanged r.name %}{{forloop.counter0|multiply:150|add:20}}px{% endifchanged %}; width: {{infos.2}}px; display: block; left: 10px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle '#54C571' '#F75D59' '#C2DFFF' %}; line-height: 150px; vertical-align: middle; height:150px; text-align: center;">{{r.name}}
 		</div>
-		<div style="position: absolute; top: {% ifchanged r.name %}{{forloop.counter0|multiply:150|add:20}}px{% endifchanged %}; width: 1000px; display: block; left: 75px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle '#54C571' '#F75D59' '#C2DFFF' %}; height:150px">{% for re in r.reqlist %} <a href="/edit/{{re.id}}"><div style="position: absolute; background-color: blue; width: {{re.size}}px; left: {{re.offset}}px; height:30px; top:{{re.yoffset}}px; line-height: 30px; vertical-align: middle; text-align:center; border: 1px dashed white">
-					{{re.title}} : {{re.id}}</div></a>{% endfor %}</div>
+		<div style="position: absolute; top: {% ifchanged r.name %}{{forloop.counter0|multiply:150|add:20}}px{% endifchanged %}; width: 990px; display: block; left: 75px; border: 2px solid black; border-radius: 5px 10px 0 5px; background-color:{% cycle '#54C571' '#F75D59' '#C2DFFF' %}; height:150px">{% for re in r.reqlist %} <a href="/edit/{{re.id}}"><div style="position: absolute; background-color: blue; width: {{re.size}}px; left: {{re.offset}}px; height:30px; top:{{re.yoffset}}px; line-height: 30px; vertical-align: middle; text-align:center; border: 1px dashed white">
+					{{re.title}} : {{re.apps}}</div></a>{% endfor %}</div>
 		<br>
 	</div>
 	{% endfor %}

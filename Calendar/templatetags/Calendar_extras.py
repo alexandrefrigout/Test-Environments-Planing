@@ -23,3 +23,7 @@ def displaydaydate(value):
 @register.filter
 def dateop(value, arg):
 	return (value - arg).days
+
+@register.filter
+def updateoffset(value, arg):
+	return value+arg

@@ -6,11 +6,16 @@ Replace this with more appropriate tests for your application.
 """
 
 from django.test import TestCase
+from Calendar.models import Request, Envs, Application
 
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
+class EnvsTest(TestCase):
+    def setUp(self):
+	Application.objects.create(appname='ATLAS')
+	Envs.objects.create(name='ENV6')
+    def test_Env_creation(self):
         """
-        Tests that 1 + 1 always equals 2.
+	Test that ENV6 is created
         """
-        self.assertEqual(1 + 1, 2)
+	en = Envs.objects.get(name='ENV6')
+        self.assertEqual(en.name, 'ENV6')
