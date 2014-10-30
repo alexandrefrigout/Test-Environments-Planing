@@ -9,6 +9,9 @@ class Application(models.Model):
 	def __unicode__(self):
 		return self.appname
 
+        def get_appname(self):
+                return self.appname
+
 	class Meta:
         	ordering = ('appname',)
 		

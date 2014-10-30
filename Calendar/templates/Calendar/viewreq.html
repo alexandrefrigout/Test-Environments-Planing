@@ -1,0 +1,66 @@
+{% extends 'Calendar/base.html' %}
+{% load Calendar_extras %}
+{% block body %}
+<script>
+$(document).ready(function () {
+	$( ".batchType" ).show();
+	$( ".daterefresh" ).show();
+});
+</script>
+	<div align="center" style="width: 95%; margin: 30px;">
+		{% csrf_token %}
+			<table style="width: 100%">
+			{% for field in form %}
+			    	<tr class={{field.name}} style="background-color:{% cycle '#D6FFD6' '#E0F0FF' %};">
+					<td style="width: 50%; height: 30px; border-bottom: 1px dashed black;">
+	        			{{ field.label_tag }}
+					</td>
+					<td style="width: 50%; word-break: break-all; height: 30px; border-bottom: 1px dashed black;">
+					{% if field.name == 'refresh' %}
+						{% if not field.value %}
+							Non
+						{% else %}
+							Oui
+						{% endif %}
+					{% else %}
+						{% if field.name == 'batchs' %}
+							{% if not field.value %}
+								Non
+							{% else %}
+								Oui
+							{% endif %}
+						{% else %}	
+							{% if field.name|findin:"refresh" %}
+								{% if not field.value %}
+									---
+								{% else %}
+									{{ field.value }}
+								{% endif %}
+							{% else %}
+								{% if field.name == 'apps' %}
+									{{ applis }}
+								{% else %}
+									{{ field.value }}
+								{% endif %}
+							{% endif %}
+						{% endif %}
+					{% endif %}
+					</td>
+	    			</tr>
+			{% endfor %}
+			<tr>
+			<td style="width: 50%; height: 30px; border-bottom: 1px dashed black; padding-top: 20px;">
+				<form action="/edit/{{ form.initial.id }}" method="GET">
+					<input type="submit" value="Edit" style="width: 100px; height: 25px;"/>
+				</form>
+			</td>
+			<td style="width: 50%; height: 30px; border-bottom: 1px dashed black; padding-top: 20px;">
+		                <form action="/delete/{{ form.initial.id }}" method="GET">
+                		        <input type="submit" value="Supprimer" style="width: 100px; height: 25px; background-color: red"/>
+                		</form>
+			</td>
+			</tr>
+			</table>
+	</div>
+
+{% endblock %}

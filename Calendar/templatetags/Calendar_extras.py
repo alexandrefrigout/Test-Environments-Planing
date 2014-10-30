@@ -25,5 +25,12 @@ def dateop(value, arg):
 	return (value - arg).days
 
 @register.filter
-def updateoffset(value, arg):
-	return value+arg
+def appslist(obj):
+	return obj.get_apps()
+
+@register.filter
+def findin(value, string):
+	if value.find(string) != -1:
+		return True
+	else:
+		return False

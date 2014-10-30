@@ -11,6 +11,7 @@ import datetime
 import collections
 from Calendar.models import Envs, Application, Request, History
 
+Informed_group='aef@ubp.ch'
 
 class RequestFormAssign(forms.ModelForm):
         #Conserver la propriete required = false de daterefresh
@@ -89,15 +90,12 @@ class RequestForm(forms.ModelForm):
 def create(request):
 	if request.method == 'POST':
 		form = RequestForm(request.POST)
-		print form['daterefresh'].value()
 		if form.is_valid():
-			print form['start'].value()
 			form.save()
-			print form['start'].value()
 			req = Request.objects.get(title=request.POST['title'])
 			applist = req.get_apps()
 			message = "Bonjour, vous avez envoye une demande d'environnement de test pour le sujet " + request.POST['title'] + ".\nVotre demande est la suivante :\n\tReference : " + request.POST['reference'] + "i\n\t Date de debut : " +request.POST['start'] + "\n\tDate de fin : " +request.POST['end']+ "\n\tVersion des programmes et DB : " + request.POST['version'] + "\n\tDate des donnees souhaitee : " +request.POST['daterefresh'] + "\n\tTypes de batchs : " +request.POST['batchType'] + "\n\tApplications necessaires : " + applist + "\n\nCette requete sera prise en compte par l'equipe Environnement Management dans les plus brefs delais."
-			send_mail("Demande d'environnement de test pour "+request.POST['title'], message, 'aef@ubp.ch', [request.POST['trigram']+'@ubp.ch'], fail_silently=False)
+			send_mail("Demande d'environnement de test pour "+request.POST['title'], message, Informed_group, [request.POST['trigram']+'@ubp.ch'], fail_silently=False)
 			return HttpResponseRedirect('/')
 		else:
 			print form.errors
@@ -105,20 +103,46 @@ def create(request):
 		form = RequestForm()
 	return render(request, 'Calendar/createreq.html', {'form' : form})
 
+def returnApps(list):
+	applist = []
+	for l in list:
+		app = Application.objects.filter(id=l)
+		applist.append(app[0].get_appname())
+	return applist
 
 def editRequest(request, title):
 	tomodif = Request.objects.get(id=title)
 	if request.method == 'POST':
 		form = RequestForm(request.POST, instance=tomodif)	
-		for changed in form.changed_data:
-			change = History.objects.create(request = tomodif, fieldmodified=changed, valuebefore=getattr(tomodif, changed), valueafter = form[changed].value())
-		if form.is_valid():
-                        form.save()
-                        return HttpResponseRedirect('/')
+		if form.has_changed:
+			changes = []
+			for changed in form.changed_data:
+				if changed == 'apps':
+					modif = changed + " avant " + tomodif.get_apps() + " apres " + ", ".join(returnApps(form[changed].value()))
+					changes.append(modif)
+					change = History.objects.create(request = tomodif, fieldmodified=changed, valuebefore=tomodif.get_apps(), valueafter = ", ".join(returnApps(form[changed].value())))
+				else:
+					modif = changed + " avant " + getattr(tomodif, changed) + " apres " + form[changed].value()
+                                        changes.append(modif)
+                                        change = History.objects.create(request = tomodif, fieldmodified=changed, valuebefore=getattr(tomodif, changed), valueafter = form[changed].value())
+
+			message = "La demande "+request.POST['title']+" a ete modifiee.\nLes modifications sont les suivantes :\n" + "\n".join(changes)
+			
+			if form.is_valid():
+                	        form.save()
+				send_mail("Modification de la demande "+request.POST['title'], message, Informed_group, [request.POST['trigram']+'@ubp.ch'], fail_silently=False)
+                	        return HttpResponseRedirect('/')
 	else:
 		print "Dehors"
                 form = RequestForm(instance=tomodif)
         return render(request, 'Calendar/edit.html', {'form' : form})
+
+def viewRequest(request, title):
+	toview = Request.objects.get(id=title)
+	form = RequestForm(instance=toview)
+	applist = toview.get_apps()
+	return render(request, 'Calendar/viewreq.html', {'form' : form, 'applis' : applist})
+	
 
 def deleteRequest(request, title):
 	todel = Request.objects.get(id=title)
@@ -154,21 +178,19 @@ class envTmp:
 		self.reqlist.append(req)
 
 	def sortreq(self):
-		self.reqlist = sorted(self.reqlist, key=lambda req: req.end)
+		self.reqlist = sorted(self.reqlist, key=lambda req: req[0].end)
 
 	def assignzoffset(self):
 		for i, r in enumerate(self.reqlist):
 			if i < len(self.reqlist) - 1:
-				if r.end > self.reqlist[i+1].start:
+				if r[0].end > self.reqlist[i+1][0].start:
 					for p in range(i+1, len(self.reqlist)):
-						self.reqlist[p].yoffset += 33
+						self.reqlist[p][1].yoffset += 33
 			
 			
 
-class reqTmp:
+class reqProps:
 	def __init__(self, req, indice, start_date, end_date):
-		self.__dict__ = req.__dict__
-		self.apps = ''
 		if req.start < start_date.date() and req.end < end_date.date():
 			print "premier"
 			self.offset = 0
@@ -178,7 +200,6 @@ class reqTmp:
 			print "secomd"
 			self.size = (end_date.date() + datetime.timedelta(days=1) - req.start).days*indice
 			self.offset = indice*(req.start - start_date.date()).days
-			print "11111", self.title, self.size
 		elif req.start < start_date.date() and req.end >= end_date.date():
 			print "^derniesiemeo"
 			self.size = (end_date + datetime.timedelta(days=1) - start_date).days*indice
@@ -208,7 +229,7 @@ def makeView(request):
                         infostech = []
                         nbjours = (dateto + datetime.timedelta(days=1)- datefrom).days if (dateto - datefrom).days > 0 else 1
                         infostech.append(nbjours)
-                        indice = int(1000/nbjours)
+                        indice = 1000/nbjours
                         infostech.append(indice)
                         etiquettewidth = 50
                         infostech.append(etiquettewidth)
@@ -244,37 +265,33 @@ def makeView(request):
 						if req.env.name == e.name:
 							#if e.name == "ENV1":
 							#	print "1env4"
-							tmpreq = reqTmp(req, indice, datefrom, dateto)
-							tmpreq.apps=req.get_apps()
+							props = reqProps(req, indice, datefrom, dateto)
 							print "premier", req.get_apps()
-							e.add_req(tmpreq)
+							e.add_req((req, props))
 				for re in reqsL:
 					if re.env:
 						if re.env.name == e.name:
 							#if e.name == "ENV1":
 							#	print "2env4"
-							tmpreq = reqTmp(re, indice, datefrom, dateto)
-							tmpreq.apps=req.get_apps()
-							print "second", req.get_apps()
-							e.add_req(tmpreq)
+							props = reqProps(re, indice, datefrom, dateto)
+							print "second", re.get_apps()
+							e.add_req((re, props))
 				for reqq in reqsR:
         	                         if reqq.env:
 	                                 	if reqq.env.name == e.name:
 							#if e.name == "ENV1":
 							#	print "3env4"
-                	                        	tmpreq = reqTmp(reqq, indice, datefrom, dateto)
-							tmpreq.apps=req.get_apps()
-							print "Avant dernier", req.get_apps()
-                        	                        e.add_req(tmpreq)
+							props = reqProps(reqq, indice, datefrom, dateto)
+							print "Avant dernier", reqq.get_apps()
+                        	                        e.add_req((reqq, props))
                                 for reqqs in reqsA:
                                		if reqqs.env:
                                         	if reqqs.env.name == e.name:
 							#if e.name == "ENV1":
 							#	print "4env4"
-                                                	tmpreq = reqTmp(reqqs, indice, datefrom, dateto)
-							tmpreq.apps=req.get_apps()
-							print "Last", req.get_apps()
-                                                        e.add_req(tmpreq)
+                                                        props = reqProps(reqqs, indice, datefrom, dateto)
+							print "Last", reqqs.get_apps()
+                                                        e.add_req((reqqs, props))
 
 				e.sortreq()
 				e.assignzoffset()
