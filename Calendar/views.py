@@ -53,6 +53,12 @@ class RequestForm(forms.ModelForm):
 		self.fields['comments'].required = False
 
 	title = forms.CharField(label='Titre', widget=forms.TextInput(attrs={'id': 'reqtitle'}))
+        trigram = forms.CharField(label='Trigramme', widget=forms.TextInput())
+        refresh = forms.CharField(label='Besoin de refresh', widget=forms.TextInput())
+        batchs = forms.CharField(label='Besoin de batchs', widget=forms.TextInput())
+        batchType = forms.CharField(label='Type de batchs', widget=forms.TextInput())
+        apps = forms.CharField(label='Applications', widget=forms.TextInput())
+        comments = forms.CharField(label='Commentaires', widget=forms.TextInput())
 
 	start = forms.DateField(('%m/%d/%Y',), label='Debut', widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'dateFrom'}))
 	end = forms.DateField(('%m/%d/%Y',), label='Fin', widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'dateTo'}))
@@ -94,7 +100,31 @@ class RequestFormEdit(forms.ModelForm):
                 self.fields['daterefresh'].required = False
                 self.fields['comments'].required = False
 
+	#Version des programmes et de la copie de la db
+        Prod = 'Prod'
+        Release = 'Release'
+        VER_CHOICES = (
+                (Prod, 'Prod'),
+                (Release, 'Release'),
+        )
+
+        #types de batche a tourner
+        NoBatchs = 'Aucun'
+        Daily = 'Journalier'
+        OnDemand = 'A la demande'
+        BATCH_CHOICES = (
+                (NoBatchs, 'Aucun'),
+                (Daily, 'Journalier'),
+                (OnDemand, 'A la demande'),
+        )
+
+
+
         title = forms.CharField(label='Titre', widget=forms.TextInput(attrs={'id': 'reqtitle'}))
+        trigram = forms.CharField(label='Trigramme', widget=forms.TextInput())
+        comments = forms.CharField(label='Commentaires', widget=forms.Textarea())
+	batchType = forms.ChoiceField(label='Type de batchs', choices=BATCH_CHOICES)
+	version = forms.ChoiceField(label='Version des programmes et db', choices=VER_CHOICES)
 
         start = forms.DateField(('%m/%d/%Y',), label='Debut', widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'dateFrom'}))
         end = forms.DateField(('%m/%d/%Y',), label='Fin', widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'dateTo'}))
@@ -116,6 +146,12 @@ class RequestFormEdit(forms.ModelForm):
                         if not cleaned_data.get('daterefresh'):
                                 raise forms.ValidationError("Veuillez preciser la date du refresh souhaite")
                 return cleaned_data['daterefresh']
+
+	def clean_batchType(self):
+		cleaned_data = self.cleaned_data
+		if cleaned_data.get('batchs') == False:
+			cleaned_data['batchType'] = 'Aucun'
+		return cleaned_data['batchType']
 
 
         class Meta:
@@ -156,6 +192,10 @@ def returnApps(list):
 	return applist
 
 def editRequest(request, title):
+	"""
+	La fonction editRequest cree un formulaire a partir de l'instance de Request que l'on veut editer.
+	Lorsque les modifications sont faites, la demande est sauvegardee.
+	"""
 	tomodif = Request.objects.get(id=title)
 	if request.method == 'POST':
 		form = RequestFormEdit(request.POST, instance=tomodif)	
@@ -166,8 +206,12 @@ def editRequest(request, title):
 					modif = changed + " avant " + tomodif.get_apps() + " apres " + ", ".join(returnApps(form[changed].value()))
 					changes.append(modif)
 					change = History.objects.create(request = tomodif, fieldmodified=changed, valuebefore=tomodif.get_apps(), valueafter = ", ".join(returnApps(form[changed].value())))
+				elif changed == 'start' or changed == 'end' or changed == 'daterefresh':
+					modif = changed + " avant " + str(getattr(tomodif, changed)) + " apres " + str(form[changed].value())
+                                        changes.append(modif)
+                                        change = History.objects.create(request = tomodif, fieldmodified=changed, valuebefore=getattr(tomodif, changed), valueafter = datetime.datetime.strptime(form[changed].value(), "%m/%d/%Y").date())
 				else:
-					modif = changed + " avant " + getattr(tomodif, changed) + " apres " + form[changed].value()
+					modif = changed + " avant " + str(getattr(tomodif, changed)) + " apres " + str(form[changed].value())
                                         changes.append(modif)
                                         change = History.objects.create(request = tomodif, fieldmodified=changed, valuebefore=getattr(tomodif, changed), valueafter = form[changed].value())
 
@@ -185,7 +229,8 @@ def viewRequest(request, title):
 	toview = Request.objects.get(id=title)
 	form = RequestForm(instance=toview)
 	applist = toview.get_apps()
-	return render(request, 'Calendar/viewreq.html', {'form' : form, 'applis' : applist})
+	changelist = History.objects.filter(request=title)
+	return render(request, 'Calendar/viewreq.html', {'form' : form, 'applis' : applist, 'history' : changelist})
 	
 
 def deleteRequest(request, title):

@@ -76,7 +76,7 @@ class Request(models.Model):
 
 class History(models.Model):
 	request = models.ForeignKey('Request')
-	datemodif = models.DateField(auto_now_add=True, auto_now=True)
+	datemodif = models.DateTimeField(auto_now_add=True, auto_now=True)
 	fieldmodified = models.CharField(max_length=50)
 	valuebefore = models.TextField()
 	valueafter = models.TextField()

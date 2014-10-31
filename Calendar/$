@@ -23,7 +23,6 @@
                                 $( ".daterefresh" ).hide();
                         }
                         $( ".hist" ).hide();
-                        $( "#editrequest" ).fadeToggle("slow");
 
 
 		});
@@ -53,33 +52,24 @@
                         }
                     });
                     $( "#showhistory" ).click(function() {
-                    	$( ".hist" ).fadeToggle("slow");
+                    	$( ".hist" ).toggle("slow");
                     	var pos=$("#hist").offset().top;
-                    	if( $( ".hist" ).attr("name")) {
-                    		$('html, body').animate({scrollTop:pos}, 'slow');
-                    		$( "#btnhist" ).text("Cacher l'historique");
-                    		$( ".hist" ).removeAttr("name");		
-			}
-			else{
-				$('html, body').animate({scrollTop:0}, 'slow');
-                    		$( "#btnhist" ).text("Historique de la demande");
-				$( ".hist" ).attr("name", "cache");
-			}
+                    	$('html, body').animate({scrollTop:pos}, 'slow');
+                    	pos = 0;
                     });
 	
 
 		});
 	</script>
-	<div width="100%" style="text-align: center; position: relative;">
-		<p><h1>Environnement Management</h1></p>
-	</div>
+
+
 
 
 	</head>
 
 
 	<body>
-	<div width="100%" class="nav" style="position: relative; top: 0px">
+	<div width="100%" class="nav">
 		<ul>
 			<li><a href="/create/" class="links">Nouvelle demande</a></li>
 			<li><a href="/" class="links">liste des demandes</a></li>

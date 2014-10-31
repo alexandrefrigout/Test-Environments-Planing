@@ -1,8 +1,8 @@
 
 html, body{
-	margin: 0;
-	padding: 0; 
-	border: 0;
+	margin: 0px;
+	padding: 0px; 
+	border: 0px;
 }
 
 .error {
@@ -19,7 +19,7 @@ html, body{
 
 ul {
 	list-style-type: none;
-	padding: 10px;
+	padding: 0px;
 	margin: 0px auto;
 	width: 100%;
  }
@@ -33,7 +33,7 @@ li {
 	vertical-align: middle;
 	text-align: center;
 	display: inline-block;
-	background: #999;
+	background: #E0F0FF;
 	margin: 5px;
 }
 
@@ -78,4 +78,14 @@ a > div {
 a > div:hover {
 	color: red;
 	cursor: hand;
+}
+
+button {
+	background: rgb(204, 229, 255);
+	border: 1px;
+}
+
+.btns{
+	background: rgb(204, 229, 255);
+        border: 1px;
 }
