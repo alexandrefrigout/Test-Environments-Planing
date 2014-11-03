@@ -34,3 +34,7 @@ def findin(value, string):
 		return True
 	else:
 		return False
+
+@register.filter
+def capitalize(value):
+	return value.title()
