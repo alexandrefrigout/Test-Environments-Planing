@@ -83,10 +83,42 @@ $(document).ready(function () {
                 {% for h in history %}
                         <tr>
                                 <td style="word-break: break-all; width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                        {{h.fieldmodified}}
+					{% if h.fieldmodified == 'batchs' %}
+						Besoin de Batchs
+					{% else %}
+						{% if h.fieldmodified == 'batchType' %}
+							Type de batchs
+						{% else %}
+							{% if h.fieldmodified == 'title' %}
+								Titre
+							{% else %}
+								{% if h.fieldmodified == 'apps' %}
+									Applications
+								{% else %}
+									{% if h.fieldmodified == 'start' %}
+										Debut
+									{% else %}
+                                                                        	{% if h.fieldmodified == 'end' %}
+											Fin
+										{% else %}
+                                                                        		{% if h.fieldmodified == 'trigram' %}
+												Trigramme
+											{% else %}
+												{% if h.fieldmodified == 'comments' %}
+													Commentaires
+                                        							{% else %}
+													{{h.fieldmodified}}
+												{% endif %}
+											{% endif %}
+										{% endif %}
+									{% endif %}
+								{% endif %}
+							{% endif %}
+						{% endif %}
+					{% endif %}
                                 </td>
                                 <td style="word-break: break-all; width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                        {{h.datemodif}}
+					{{h.datemodif}}
                                 </td>
                                 <td style="word-break: break-all; width: 25%; height: 30px; border-bottom: 1px dashed black;">
                                         {{h.valuebefore}}
