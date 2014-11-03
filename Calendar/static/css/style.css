@@ -87,5 +87,31 @@ button {
 
 .btns{
 	background: rgb(204, 229, 255);
-        border: 1px;
+        border: 0px none;
+}
+
+.btns:hover {
+	border: 1px solid;
+}
+
+.tdbtns {
+	width: 25%;
+	height: 30px;
+}
+
+.tdhist {
+        width: 25%;
+        height: 30px;
+	border-bottom: 1px dashed black;
+	word-break: break-all;
+}
+
+.fieldval:hover {
+	font-size: 1.3em;
+}
+
+.divlarge {
+	position: relative;
+	width: 95%;
+	margin: 30px;
 }
