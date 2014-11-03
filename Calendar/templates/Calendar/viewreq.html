@@ -6,6 +6,10 @@ $(document).ready(function () {
 	$( ".batchType" ).show();
 	$( ".daterefresh" ).show();
 });
+$( "#printbtn").keypress( function() {
+	alert("print");
+	$( "#printable" )..print();
+});
 </script>
 <style type="text/css">
 	@media print {
@@ -21,15 +25,17 @@ $(document).ready(function () {
 		}
 	}
 </style>
-	<div align="center" style="position: relative; width: 95%; margin: 30px; display: none;" id="editrequest">
+	<div align="center" style="display: none;" class="divlarge" id="editrequest">
 		{% csrf_token %}
 			<table style="width: 100%;" id="printable">
 			{% for field in form %}
 			    	<tr class={{field.name}} style="background-color:{% cycle '#D6FFD6' '#E0F0FF' %};">
-					<td style="width: 50%; height: 30px; border-bottom: 1px dashed black;">
-	        			{{ field.label_tag }}
+					<td class="tdhist" style="width: 50%;">
+					<b>
+	        				{{ field.label_tag }}
+					</b>
 					</td>
-					<td style="width: 50%; word-break: break-all; height: 30px; border-bottom: 1px dashed black;">
+					<td class="tdhist fieldval" style="width: 50%;">
 					{% if field.name == 'refresh' %}
 						{% if not field.value %}
 							Non
@@ -64,93 +70,123 @@ $(document).ready(function () {
 			{% endfor %}
 			</table>
 	</div>
-      <div align="center" style="position: relative; width: 95%; margin: 30px;" class="hist" id="hist" name="cache">
-        <table style="width: 100%" id="printable">
-                <tr>
-                        <td style="width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                champs modifie
-                        </td>
-                        <td style="width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                date de modification
-                        </td>
-                        <td style="width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                ancienne valeur
-                        </td>
-                        <td style="width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                nouvelle valeur
-                        </td>
-                </tr>
-                {% for h in history %}
-                        <tr>
-                                <td style="word-break: break-all; width: 25%; height: 30px; border-bottom: 1px dashed black;">
-					{% if h.fieldmodified == 'batchs' %}
-						Besoin de Batchs
-					{% else %}
-						{% if h.fieldmodified == 'batchType' %}
-							Type de batchs
-						{% else %}
-							{% if h.fieldmodified == 'title' %}
-								Titre
+	{% if history %}
+	      	<div align="center" class="hist divlarge" id="hist" name="cache">
+	        	<table style="width: 100%" id="printable">
+	        	        <tr>
+	        	                <td class="tdhist">
+	        	                        <b>Champ modifie</b>
+	        	                </td>
+	        	                <td class="tdhist">
+	        	                        <b>Date de modification</b>
+	        	                </td>
+	        	                <td class="tdhist">
+	        	                        <b>Ancienne valeur</b>
+	        	                </td>
+	        	                <td class="tdhist">
+	        	                        <b>Nouvelle valeur</b>
+	        	                </td>
+	        	        </tr>
+	        	        {% for h in history %}
+	        	                <tr>
+	        	                	<td class="tdhist">
+							{% if h.fieldmodified == 'batchs' %}
+								Besoin de Batchs
 							{% else %}
-								{% if h.fieldmodified == 'apps' %}
-									Applications
+								{% if h.fieldmodified == 'batchType' %}
+									Type de batchs
 								{% else %}
-									{% if h.fieldmodified == 'start' %}
-										Debut
+									{% if h.fieldmodified == 'title' %}
+										Titre
 									{% else %}
-                                                                        	{% if h.fieldmodified == 'end' %}
-											Fin
+										{% if h.fieldmodified == 'apps' %}
+											Applications
 										{% else %}
-                                                                        		{% if h.fieldmodified == 'trigram' %}
-												Trigramme
+											{% if h.fieldmodified == 'start' %}
+												Debut
 											{% else %}
-												{% if h.fieldmodified == 'comments' %}
-													Commentaires
-                                        							{% else %}
-													{{h.fieldmodified}}
+	        	                                                                	{% if h.fieldmodified == 'end' %}
+													Fin
+												{% else %}
+	        	                                                                		{% if h.fieldmodified == 'trigram' %}
+														Trigramme
+													{% else %}
+														{% if h.fieldmodified == 'comments' %}
+															Commentaires
+	        	                                							{% else %}
+															{% if h.fieldmodified == 'daterefresh' %}
+																Date du refresh 
+															{% else %}
+																{% if h.fieldmodified == 'refresh' %}
+																	Besoin de refresh
+																{% else %}
+																	{{h.fieldmodified|capitalize}}
+																{% endif %}
+															{% endif %}
+														{% endif %}	
+													{% endif %}
 												{% endif %}
 											{% endif %}
 										{% endif %}
 									{% endif %}
 								{% endif %}
 							{% endif %}
-						{% endif %}
-					{% endif %}
-                                </td>
-                                <td style="word-break: break-all; width: 25%; height: 30px; border-bottom: 1px dashed black;">
-					{{h.datemodif}}
-                                </td>
-                                <td style="word-break: break-all; width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                        {{h.valuebefore}}
-                                </td>
-                                <td style="word-break: break-all; width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                        {{h.valueafter}}
-                                </td>
-                        </tr>
-                {% endfor %}
-        </table>
-        </div>
-	<div align="center" style="position: relative; width: 95%; margin: 30px;">
-
+	        	                        </td>
+	        	                	<td class="tdhist">
+							{{h.datemodif}}
+	        	                        </td>
+	        	                	<td class="tdhist">
+							{% if h.valuebefore == 'False' %}
+								Non
+							{% else %}
+								{% if h.valuebefore == 'True' %}
+									Oui
+								{% else %}
+	        	                                		{{h.valuebefore}}
+								{% endif %}
+							{% endif %}
+							
+	        	                        </td>
+	        	                	<td class="tdhist">
+	        	                                {% if h.valueafter == 'False' %}
+	        	                                        Non
+	        	                                {% else %}
+	        	                                        {% if h.valueafter == 'True' or h.valueafter == 'on' %}
+	        	                                                Oui
+	        	                                        {% else %}
+	        	                                                {{h.valueafter}}
+	        	                                        {% endif %}
+	        	                                {% endif %}
+	        	                        </td>
+	        	                </tr>
+	        	        {% endfor %}
+	        	</table>
+	        	</div>
+	{% else %}
+	      	<div align="center" class="hist divlarge" id="hist" name="cache">
+			<p class="error">La demande n'a pas de changements dans son historique</p>
+		</div>
+	{% endif %}
+		<div align="center" class="divlarge">
 			<table style="width: 100%">
-			<tr>
-			<td style="width: 25%; height: 30px; border-bottom: 1px dashed black; padding-top: 20px;">
-				<form action="/edit/{{ form.initial.id }}" method="GET">
-					<input class="btns" type="submit" value="Editer la demande" style="width: 150px; height: 25px;"/>
-				</form>
-			</td>
-			<td style="width: 25%; height: 30px; border-bottom: 1px dashed black; padding-top: 20px;">
-		                <form action="/delete/{{ form.initial.id }}" method="GET">
-                		        <input class="btns" type="submit" value="Supprimer la demande" style="width: 150px; height: 25px; background-color: #FF9999"/>
-                		</form>
-			</td>
-			 <td style="width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                        <button id="showhistory" style="width: 150px; height: 25px; -color: red"><span id="btnhist">Historique de la demande</span></button>
-                        </td>
-			<td style="width: 25%; height: 30px; border-bottom: 1px dashed black;">
-                                        <button class="btns" style="width: 150px; height: 25px;" onClick="javascript:window.print()">Imprimer la page</button>
-                        </td>
-
-			</tr>
+				<tr>
+					<td class="tdbtns" style="padding-top: 20px;">
+						<form action="/edit/{{ form.initial.id }}" method="GET">
+							<input class="btns" type="submit" value="Editer la demande" style="width: 150px;  height: 25px;"/>
+						</form>
+					</td>
+					<td class="tdbtns" style="padding-top: 20px;">
+			        	        <form action="/delete/{{ form.initial.id }}" method="GET">
+	                			        <input class="btns" type="submit" value="Supprimer la demande" style="width: 150px; height: 25px;  background-color: #FF9999"/>
+	                			</form>
+					</td>
+					<td class="tdbtns">
+	                        	                <input  class="btns" id="showhistory" style="width: 150px; height: 25px;" type="submit" value="Historique de la demande"/>
+	                        	</td>
+					<td class="tdbtns">
+	                        	                <input class="btns" style="width: 150px; height: 25px; " type="submit" value="Imprimer la page" id="printbtn"/>
+	                        	</td>
+				</tr>
 			</table>
+		</div>
 {% endblock %}
