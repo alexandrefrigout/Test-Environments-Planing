@@ -54,13 +54,10 @@ class RequestForm(forms.ModelForm):
 		self.fields['daterefresh'].required = False
 		self.fields['comments'].required = False
 
-	title = forms.CharField(label='Titre', widget=forms.TextInput(attrs={'id': 'reqtitle'}))
+	title = forms.CharField(label='Objet de la demande', widget=forms.TextInput(attrs={'id': 'reqtitle'}))
         trigram = forms.CharField(label='Trigramme', widget=forms.TextInput())
         refresh = forms.BooleanField(label='Besoin de refresh')
-        batchs = forms.BooleanField(label='Besoin de batchs')
-        batchType = forms.CharField(label='Type de batchs', widget=forms.TextInput())
         apps = forms.CharField(label='Applications', widget=forms.TextInput())
-        comments = forms.CharField(label='Commentaires', widget=forms.TextInput())
 
 	start = forms.DateField(('%m/%d/%Y',), label='Debut', widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'dateFrom'}))
 	end = forms.DateField(('%m/%d/%Y',), label='Fin', widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'dateTo'}))
@@ -95,6 +92,7 @@ class RequestForm(forms.ModelForm):
 		model = Request
 		exclude = ['env']
 
+
 class RequestFormEdit(forms.ModelForm):
         #Conserver la propriete required = false de daterefresh
         def __init__(self, *args, **kwargs):
@@ -122,7 +120,7 @@ class RequestFormEdit(forms.ModelForm):
 
 
 
-        title = forms.CharField(label='Titre', widget=forms.TextInput(attrs={'id': 'reqtitle'}))
+        title = forms.CharField(label='Objet de la demande', widget=forms.TextInput(attrs={'id': 'reqtitle'}))
         trigram = forms.CharField(label='Trigramme', widget=forms.TextInput())
         comments = forms.CharField(label='Commentaires', widget=forms.Textarea())
 	batchType = forms.ChoiceField(label='Type de batchs', choices=BATCH_CHOICES)
@@ -283,22 +281,18 @@ class envTmp:
 class reqProps:
 	def __init__(self, req, indice, start_date, end_date):
 		if req.start < start_date.date() and req.end < end_date.date():
-			print "premier"
 			self.offset = 0
 			self.size = (req.end - start_date.date()).days*indice
 			#print self.title, self.size
 		elif req.start >= start_date.date() and req.end > end_date.date():
-			print "secomd"
 			self.size = (end_date.date() + datetime.timedelta(days=1) - req.start).days*indice
 			self.offset = indice*(req.start - start_date.date()).days
 		elif req.start < start_date.date() and req.end >= end_date.date():
-			print "^derniesiemeo"
 			self.size = (end_date + datetime.timedelta(days=1) - start_date).days*indice
 			#print (end_date - start_date).days, indice
 			#print "############################", self.size
 			self.offset = 0 
 		else:
-			print "dernier"
 			self.size = (req.end + datetime.timedelta(days=1)- req.start).days*indice
 			#print self.title, self.size
 			self.offset = indice*(req.start - start_date.date()).days
@@ -320,10 +314,12 @@ def makeView(request):
                         infostech = []
                         nbjours = (dateto + datetime.timedelta(days=1)- datefrom).days if (dateto - datefrom).days > 0 else 1
                         infostech.append(nbjours)
-                        indice = 1000/nbjours
+                        #indice = 1000/nbjours
+		        indice = int(request.GET['size'])/nbjours
                         infostech.append(indice)
                         etiquettewidth = 50
                         infostech.append(etiquettewidth)
+			infostech.append(int(request.GET['size']))
                         datelist = []
 			mounthlist = [] 
 			monthinit = datefrom.strftime("%B")
@@ -334,10 +330,12 @@ def makeView(request):
 				if mcurrent == monthinit:
 					msize += 1
 				else:
+					print "Init", monthinit, indice, msize, offset
 					mounthlist.append((monthinit, msize, offset))
 					monthinit = mcurrent
 					offset += msize*indice
 					msize = 1
+					print "Current", mcurrent, indice, msize,  offset
                                 datelist.append(datefrom + datetime.timedelta(days=date_un))
 			mounthlist.append((monthinit, msize, offset))
 			#recuperation de la liste des environnements existants dans la db
@@ -357,7 +355,6 @@ def makeView(request):
 							#if e.name == "ENV1":
 							#	print "1env4"
 							props = reqProps(req, indice, datefrom, dateto)
-							print "premier", req.get_apps()
 							e.add_req((req, props))
 				for ree in reqsL:
 					if ree.env:
@@ -365,7 +362,6 @@ def makeView(request):
 							#if e.name == "ENV1":
 							#	print "2env4"
 							props = reqProps(ree, indice, datefrom, dateto)
-							print "second", ree.get_apps()
 							e.add_req((ree, props))
 				for reqq in reqsR:
         	                         if reqq.env:
@@ -373,7 +369,6 @@ def makeView(request):
 							#if e.name == "ENV1":
 							#	print "3env4"
 							props = reqProps(reqq, indice, datefrom, dateto)
-							print "Avant dernier", reqq.get_apps()
                         	                        e.add_req((reqq, props))
                                 for reqqs in reqsA:
                                		if reqqs.env:
@@ -381,15 +376,13 @@ def makeView(request):
 							#if e.name == "ENV1":
 							#	print "4env4"
                                                         props = reqProps(reqqs, indice, datefrom, dateto)
-							print "Last", reqqs.get_apps()
                                                         e.add_req((reqqs, props))
 
 				e.sortreq()
 				e.assignzoffset()
 				finalList.append(e)
-
 			print len(finalList)
-			return render(request, 'Calendar/view.html', {'reqs' : finalList, 'form' : form, 'infos' : infostech, 'dates' : datelist, 'month': mounthlist })
+			return render(request, 'Calendar/view.html', {'reqs' : finalList, 'form' : form, 'infos' : infostech, 'dates' : datelist, 'month': mounthlist})
 		else:
 			return render(request, 'Calendar/view.html', {'form' : form})
 
@@ -399,10 +392,26 @@ class InputDateForm(forms.Form):
 		super(InputDateForm, self).__init__(*args, **kwargs)
 		self.fields['datefrom'].required = False
 		self.fields['dateto'].required = False
+		self.fields['size'].initial = 'OneLDScreen'
 	
+	OneLDScreen = 'OneLDScreen'
+        TwoLDScreen = 'TwoLDScreen'
+	OneHDScreen = 'OneHDScreen'
+	TwoHDScreen = 'TwoHDScreen'
+        SIZE_CHOICES = (
+                        (1000, 'OneLDScreen'),
+                        (2000, 'TwoLDScreen'),
+                        (2000, 'OneHDScreen'),
+                        (4000, 'TwoHDScreen'),
+                        )
+
+
 	datefrom = forms.DateField(('%m/%d/%Y',), label='Debut', initial=datetime.date.today, widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'datefromselect'}))
 	dateto = forms.DateField(('%m/%d/%Y',), label='Fin', initial=datetime.datetime.now() + datetime.timedelta(days=30), widget=forms.DateTimeInput(format='%m/%d/%Y', attrs={'id':'datetoselect'}))
 
+
+        size = forms.ChoiceField(label='Taille du calendrier', choices=SIZE_CHOICES)
+	
 	def clean_datefrom(self):
 		if not self.cleaned_data.get('datefrom'):
 			self.fields['datefrom'].value = datetime.date.today
@@ -417,6 +426,7 @@ class InputDateForm(forms.Form):
 		if not tto:
 			self.fields['dateto'].value = datetime.datetime.now() + datetime.timedelta(days=30)
 		return cleaned_data
+
 
 
 @login_required

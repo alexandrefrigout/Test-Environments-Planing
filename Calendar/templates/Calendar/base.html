@@ -85,7 +85,10 @@
 			<li><a href="/create/" class="links">Nouvelle demande</a></li>
 			<li><a href="/" class="links">liste des demandes</a></li>
 			<li><a href="/login/" class="links">Connexion Admin</a></li>
+			{% if user.is_authenticated %}
+			<li><a href="/admin/" class="links">Administration</a></li>
 			<li><a href="/logout/" class="links">Deconnexion</a></li>
+			{% endif %}
 		</ul>
 	</div>
 	<div>
