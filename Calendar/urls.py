@@ -12,4 +12,6 @@ urlpatterns = patterns('',
     url(r'^delete/(\w+)', views.deleteRequest),
     url(r'^assign/(\w+)', views.assign),
     url(r'^accounts/login/', 'django.contrib.auth.views.login'),
+    url(r'^login/', views.login),
+    url(r'^logout/', views.logout_view),
 )

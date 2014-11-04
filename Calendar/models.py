@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 from django.db import models
+from datetime import date
 import datetime
 
 
@@ -70,6 +71,12 @@ class Request(models.Model):
 
 	def get_apps(self):
 		return ", ".join([p.appname for p in self.apps.all()])
+
+	def retStart(self):
+		return datetime.datetime.strptime(self.start, "%m/%d/%Y").date()
+
+	def retEnd(self):
+		return datetime.datetime.strptime(self.end, "%m/%d/%Y").date()
 
 	class Meta:
 		ordering = ('-date_creation',)

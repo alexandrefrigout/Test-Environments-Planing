@@ -63,6 +63,9 @@ MEDIA_URL = ''
 # Example: "/home/media/media.lawrence.com/static/"
 STATIC_ROOT = ''
 
+DATE_INPUT_FORMATS = ('%m/%d/%Y')
+
+
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/home/aef/Environnements/Calendar/static/'

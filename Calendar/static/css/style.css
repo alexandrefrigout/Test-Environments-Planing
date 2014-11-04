@@ -3,6 +3,10 @@ html, body{
 	margin: 0px;
 	padding: 0px; 
 	border: 0px;
+background: -moz-linear-gradient(top,  #cfddac,  #fff);
+    background: -webkit-gradient(linear, left top, left bottom, from(#cfddac), to(#fff));
+    background: linear-gradient(rgb(207,221,172),rgb(255,255,255));
+
 }
 
 .error {

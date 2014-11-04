@@ -22,7 +22,7 @@
 		<div style="position: absolute; left: 0px; top: 0px; width:76px; display: block;"></div>
 		{% for m in month %}<div style="position: absolute; left: {{m.2}}px; top: 0px; width: {{m.1|multiply:infos.1}}px; display: block; border: 1px solid black; text-align: center;">{{m.0}} </div> {% endfor %}
 	{% for day in dates %}
-		<div style="height: 800px; background-color: white; position: absolute; display: block; top: 20px; left: {{ forloop.counter0|multiply:infos.1|add:76}}px; width: {{infos.1}}px; overflow: auto; border-left: 1px dashed black; {% if forloop.last %} border-right: 1px dashed black; {% endif %} text-align: center;">{{day|displaydaydate}}</div>
+		<div style="height: 800px; background-color: white; position: absolute; display: block; top: 20px; padding-top: 3px;left: {{ forloop.counter0|multiply:infos.1|add:76}}px; width: {{infos.1}}px; overflow: auto; border-left: 1px dashed black; {% if forloop.last %} border-right: 1px dashed black; {% endif %} font-size: 12px; text-align: center;">{{day|displaydaydate}}</div>
 	{% endfor %}
 	{% for r in reqs %}
 </div>

@@ -28,49 +28,46 @@
 
 		});
 		$(function() {
-		   $( "#dateFrom" ).datepicker();
-		   $( "#dateTo" ).datepicker();
-		   $( "#dateRefresh" ).datepicker();
-		   //$( "#datefromselect" ).datepicker({ dateFormat: 'yy-mm-dd' });
-		   $( "#datefromselect" ).datepicker();
-		   //$( "#datetoselect" ).datepicker({ dateFormat: 'yy-mm-dd' });
-		   $( "#datetoselect" ).datepicker();
-		   $( "#id_refresh" ).click(function() {
-			if ($("#id_refresh").prop('checked')){
-				$( ".daterefresh" ).fadeToggle("slow");
-			}
-			else{
-				$( ".daterefresh" ).fadeToggle("slow");
-			}
-		    });
-                    $( "#id_batchs" ).click(function() {
-                        if ($("#id_batchs").prop('checked')){
-
-                                $( ".batchType" ).fadeToggle("slow");
-                        }
-                        else{
-                                $( ".batchType" ).fadeToggle("slow");
-                        }
-                    });
-                    $( "#showhistory" ).click(function() {
-                    	$( ".hist" ).fadeToggle("slow");
-                    	var pos=$("#hist").offset().top;
-                    	if( $( ".hist" ).attr("name")) {
-                    		$('html, body').animate({scrollTop:pos}, 'slow');
-                    		$( "#showhistory" ).val("Cacher l'historique");
-                    		$( ".hist" ).removeAttr("name");		
-			}
-			else{
-				$('html, body').animate({scrollTop:0}, 'slow');
-                    		$( "#showhistory" ).val("Historique de la demande");
-				$( ".hist" ).attr("name", "cache");
-			}
-                    });
-                    $( "#printbtn").click( function() {
-                            window.print();
-                    });
-
-	
+			$( "#dateFrom" ).datepicker();
+			$( "#dateTo" ).datepicker();
+			$( "#dateRefresh" ).datepicker();
+			//$( "#datefromselect" ).datepicker({ dateFormat: 'yy-mm-dd' });
+			$( "#datefromselect" ).datepicker();
+			//$( "#datetoselect" ).datepicker({ dateFormat: 'yy-mm-dd' });
+			$( "#datetoselect" ).datepicker();
+			$( "#id_refresh" ).click(function() {
+				if ($("#id_refresh").prop('checked')){
+					$( ".daterefresh" ).fadeToggle("slow");
+				}
+				else{
+					$( ".daterefresh" ).fadeToggle("slow");
+				}
+			});
+			$( "#id_batchs" ).click(function() {
+				if ($("#id_batchs").prop('checked')){
+					$( ".batchType" ).fadeToggle("slow");
+				}
+				else{
+					$( ".batchType" ).fadeToggle("slow");
+				}
+			});
+			$( "#showhistory" ).click(function() {
+				$( ".hist" ).fadeToggle("slow");
+					var pos=$("#hist").offset().top;
+					if( $( ".hist" ).attr("name")) {
+						$('html, body').animate({scrollTop:pos}, 'slow');
+						$( "#showhistory" ).val("Cacher l'historique");
+						$( ".hist" ).removeAttr("name");		
+					}
+					else{
+						$('html, body').animate({scrollTop:0}, 'slow');
+						$( "#showhistory" ).val("Historique de la demande");
+						$( ".hist" ).attr("name", "cache");
+					}
+			});
+			$( "#printbtn").click( function() {
+				window.print();
+			});
 
 		});
 	</script>
@@ -87,6 +84,8 @@
 		<ul>
 			<li><a href="/create/" class="links">Nouvelle demande</a></li>
 			<li><a href="/" class="links">liste des demandes</a></li>
+			<li><a href="/login/" class="links">Connexion Admin</a></li>
+			<li><a href="/logout/" class="links">Deconnexion</a></li>
 		</ul>
 	</div>
 	<div>

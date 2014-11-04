@@ -3,12 +3,14 @@ from django.shortcuts import render, render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django import forms
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import logout
 from django.core.mail import send_mail
 import time
 from datetime import date
 from datetime import datetime
 import datetime
 import collections
+import re
 from Calendar.models import Envs, Application, Request, History
 
 Informed_group='aef@ubp.ch'
@@ -54,8 +56,8 @@ class RequestForm(forms.ModelForm):
 
 	title = forms.CharField(label='Titre', widget=forms.TextInput(attrs={'id': 'reqtitle'}))
         trigram = forms.CharField(label='Trigramme', widget=forms.TextInput())
-        refresh = forms.CharField(label='Besoin de refresh', widget=forms.TextInput())
-        batchs = forms.CharField(label='Besoin de batchs', widget=forms.TextInput())
+        refresh = forms.BooleanField(label='Besoin de refresh')
+        batchs = forms.BooleanField(label='Besoin de batchs')
         batchType = forms.CharField(label='Type de batchs', widget=forms.TextInput())
         apps = forms.CharField(label='Applications', widget=forms.TextInput())
         comments = forms.CharField(label='Commentaires', widget=forms.TextInput())
@@ -357,14 +359,14 @@ def makeView(request):
 							props = reqProps(req, indice, datefrom, dateto)
 							print "premier", req.get_apps()
 							e.add_req((req, props))
-				for re in reqsL:
-					if re.env:
-						if re.env.name == e.name:
+				for ree in reqsL:
+					if ree.env:
+						if ree.env.name == e.name:
 							#if e.name == "ENV1":
 							#	print "2env4"
-							props = reqProps(re, indice, datefrom, dateto)
-							print "second", re.get_apps()
-							e.add_req((re, props))
+							props = reqProps(ree, indice, datefrom, dateto)
+							print "second", ree.get_apps()
+							e.add_req((ree, props))
 				for reqq in reqsR:
         	                         if reqq.env:
 	                                 	if reqq.env.name == e.name:
@@ -415,3 +417,12 @@ class InputDateForm(forms.Form):
 		if not tto:
 			self.fields['dateto'].value = datetime.datetime.now() + datetime.timedelta(days=30)
 		return cleaned_data
+
+
+@login_required
+def login(request):
+	return HttpResponseRedirect('/')	
+
+def logout_view(request):
+	logout(request)
+	return HttpResponseRedirect('/')

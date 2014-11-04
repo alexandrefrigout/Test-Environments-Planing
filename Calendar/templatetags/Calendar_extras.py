@@ -2,6 +2,7 @@ from django import template
 from datetime import datetime
 import time
 from datetime import date
+import re
 
 register = template.Library()
 
@@ -17,7 +18,7 @@ def range(value):
 
 @register.filter
 def displaydaydate(value):
-	return date.strftime(value, '%d') 
+	return re.sub(r'^0', '', str(date.strftime(value, '%d')))
 
 
 @register.filter
