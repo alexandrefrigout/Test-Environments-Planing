@@ -13,7 +13,7 @@ import collections
 import re
 from Calendar.models import Envs, Application, Request, History
 
-Informed_group='aef@ubp.ch'
+Informed_group='toto@com.fr'
 
 class RequestFormAssign(forms.ModelForm):
         #Conserver la propriete required = false de daterefresh
